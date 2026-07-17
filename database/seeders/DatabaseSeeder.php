@@ -16,11 +16,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->create([
-            'name' => 'Paul Longo',
-            'email' => 'paullongo@outlook.com',
-            'password' => Hash::make('Password123'),
-        ]);
+        if (! app()->isProduction()) {
+            User::factory()->create([
+                'name' => 'Paul Longo',
+                'email' => 'paullongo@outlook.com',
+                'password' => Hash::make('Password123'),
+            ]);
+        }
 
         $this->call(LeadSourceSeeder::class);
     }
