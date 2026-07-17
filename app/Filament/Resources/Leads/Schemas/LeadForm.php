@@ -1,0 +1,76 @@
+<?php
+
+namespace App\Filament\Resources\Leads\Schemas;
+
+use App\Enums\LeadStatus;
+use App\Models\LeadSource;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
+
+class LeadForm
+{
+    public static function configure(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                TextInput::make('name')
+                    ->required()
+                    ->maxLength(255),
+                TextInput::make('email')
+                    ->label('Email address')
+                    ->email()
+                    ->maxLength(255),
+                TextInput::make('phone')
+                    ->tel()
+                    ->maxLength(255),
+                Select::make('status')
+                    ->options(LeadStatus::class)
+                    ->default(LeadStatus::New)
+                    ->required(),
+                Select::make('lead_source_id')
+                    ->label('Source')
+                    ->relationship(
+                        name: 'source',
+                        titleAttribute: 'name',
+                        modifyQueryUsing: fn (Builder $query) => $query->active()->orderBy('name'),
+                    )
+                    ->searchable()
+                    ->preload()
+                    ->createOptionForm([
+                        TextInput::make('name')
+                            ->required()
+                            ->maxLength(255)
+                            ->unique(LeadSource::class),
+                        Toggle::make('is_active')
+                            ->label('Active')
+                            ->default(true)
+                            ->required(),
+                    ]),
+                Select::make('assigned_to')
+                    ->label('Assignee')
+                    ->relationship(
+                        name: 'assignee',
+                        titleAttribute: 'name',
+                        modifyQueryUsing: fn (Builder $query) => $query->orderBy('name'),
+                    )
+                    ->searchable()
+                    ->preload(),
+                TextInput::make('budget_min')
+                    ->label('Budget min')
+                    ->numeric()
+                    ->minValue(0),
+                TextInput::make('budget_max')
+                    ->label('Budget max')
+                    ->numeric()
+                    ->minValue(0),
+                TextInput::make('preferred_location')
+                    ->maxLength(255),
+                Textarea::make('notes')
+                    ->columnSpanFull(),
+            ]);
+    }
+}
