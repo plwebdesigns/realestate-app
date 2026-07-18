@@ -21,7 +21,7 @@ class LeadSourceResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    protected static string|UnitEnum|null $navigationGroup = 'CRM';
+    protected static string|UnitEnum|null $navigationGroup = 'Lead Management';
 
     protected static ?int $navigationSort = 2;
 
