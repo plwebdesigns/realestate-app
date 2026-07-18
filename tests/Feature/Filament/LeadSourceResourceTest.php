@@ -3,6 +3,7 @@
 namespace Tests\Feature\Filament;
 
 use App\Filament\Resources\LeadSources\Pages\CreateLeadSource;
+use App\Filament\Resources\LeadSources\Pages\EditLeadSource;
 use App\Filament\Resources\LeadSources\Pages\ListLeadSources;
 use App\Models\LeadSource;
 use App\Models\User;
@@ -26,9 +27,9 @@ class LeadSourceResourceTest extends TestCase
             ->assertCanSeeTableRecords($sources);
     }
 
-    public function test_can_create_a_lead_source(): void
+    public function test_admin_can_create_a_lead_source(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
 
         $this->actingAs($user);
 
@@ -46,5 +47,26 @@ class LeadSourceResourceTest extends TestCase
             'name' => 'Open House',
             'is_active' => true,
         ]);
+    }
+
+    public function test_non_admin_cannot_create_a_lead_source(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user);
+
+        Livewire::test(CreateLeadSource::class)
+            ->assertForbidden();
+    }
+
+    public function test_non_admin_cannot_edit_a_lead_source(): void
+    {
+        $user = User::factory()->create();
+        $source = LeadSource::factory()->create();
+
+        $this->actingAs($user);
+
+        Livewire::test(EditLeadSource::class, ['record' => $source->getRouteKey()])
+            ->assertForbidden();
     }
 }

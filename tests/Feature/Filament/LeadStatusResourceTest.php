@@ -3,6 +3,7 @@
 namespace Tests\Feature\Filament;
 
 use App\Filament\Resources\LeadStatuses\Pages\CreateLeadStatus;
+use App\Filament\Resources\LeadStatuses\Pages\EditLeadStatus;
 use App\Filament\Resources\LeadStatuses\Pages\ListLeadStatuses;
 use App\Models\LeadStatus;
 use App\Models\User;
@@ -26,9 +27,9 @@ class LeadStatusResourceTest extends TestCase
             ->assertCanSeeTableRecords($statuses);
     }
 
-    public function test_can_create_a_lead_status(): void
+    public function test_admin_can_create_a_lead_status(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
 
         $this->actingAs($user);
 
@@ -48,5 +49,26 @@ class LeadStatusResourceTest extends TestCase
             'is_active' => true,
             'is_default' => false,
         ]);
+    }
+
+    public function test_non_admin_cannot_create_a_lead_status(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user);
+
+        Livewire::test(CreateLeadStatus::class)
+            ->assertForbidden();
+    }
+
+    public function test_non_admin_cannot_edit_a_lead_status(): void
+    {
+        $user = User::factory()->create();
+        $status = LeadStatus::factory()->create();
+
+        $this->actingAs($user);
+
+        Livewire::test(EditLeadStatus::class, ['record' => $status->getRouteKey()])
+            ->assertForbidden();
     }
 }

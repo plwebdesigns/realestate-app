@@ -25,9 +25,15 @@ class DatabaseSeeder extends Seeder
         ]);
 
         if (! app()->isProduction()) {
-            User::factory()->create([
+            User::factory()->admin()->create([
                 'name' => 'Paul Longo',
                 'email' => 'paullongo@outlook.com',
+                'password' => Hash::make('Password123'),
+            ]);
+
+            User::factory()->create([
+                'name' => 'Test Agent',
+                'email' => 'agent@example.com',
                 'password' => Hash::make('Password123'),
             ]);
 
