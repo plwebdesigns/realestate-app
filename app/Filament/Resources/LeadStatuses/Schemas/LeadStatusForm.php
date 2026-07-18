@@ -20,6 +20,11 @@ class LeadStatusForm
                     ->label('Active')
                     ->default(true)
                     ->required(),
+                Toggle::make('is_default')
+                    ->label('Default for new leads')
+                    ->helperText('Only one status can be the default. Enabling this clears the previous default.')
+                    ->default(false)
+                    ->required(),
             ]);
     }
 }

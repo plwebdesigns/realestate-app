@@ -22,6 +22,9 @@ class LeadStatusesTable
                 IconColumn::make('is_active')
                     ->label('Active')
                     ->boolean(),
+                IconColumn::make('is_default')
+                    ->label('Default')
+                    ->boolean(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

@@ -22,9 +22,12 @@ class LeadStatusSeeder extends Seeder
         ];
 
         foreach ($statuses as $name) {
-            LeadStatus::query()->firstOrCreate(
+            LeadStatus::query()->updateOrCreate(
                 ['name' => $name],
-                ['is_active' => true],
+                [
+                    'is_active' => true,
+                    'is_default' => $name === 'New',
+                ],
             );
         }
     }

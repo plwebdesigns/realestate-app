@@ -37,6 +37,7 @@ class LeadStatusResourceTest extends TestCase
             ->fillForm([
                 'name' => 'Qualified',
                 'is_active' => true,
+                'is_default' => false,
             ])
             ->call('create')
             ->assertNotified()
@@ -45,6 +46,7 @@ class LeadStatusResourceTest extends TestCase
         $this->assertDatabaseHas(LeadStatus::class, [
             'name' => 'Qualified',
             'is_active' => true,
+            'is_default' => false,
         ]);
     }
 }

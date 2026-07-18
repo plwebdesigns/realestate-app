@@ -20,6 +20,7 @@ class LeadStatusFactory extends Factory
         return [
             'name' => fake()->unique()->words(2, true),
             'is_active' => true,
+            'is_default' => false,
         ];
     }
 
@@ -27,6 +28,13 @@ class LeadStatusFactory extends Factory
     {
         return $this->state(fn (array $attributes): array => [
             'is_active' => false,
+        ]);
+    }
+
+    public function asDefault(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'is_default' => true,
         ]);
     }
 }

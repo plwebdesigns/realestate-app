@@ -34,7 +34,7 @@ class LeadForm
                         titleAttribute: 'name',
                         modifyQueryUsing: fn (Builder $query) => $query->active()->orderBy('name'),
                     )
-                    ->default(fn (): ?int => LeadStatus::query()->where('name', 'New')->value('id'))
+                    ->default(fn (): ?int => LeadStatus::defaultId())
                     ->searchable()
                     ->preload()
                     ->required()

@@ -46,4 +46,31 @@ class LeadStatusTest extends TestCase
         $this->assertCount(2, $status->leads);
         $this->assertTrue($status->leads->contains($leads->first()));
     }
+
+    public function test_default_id_returns_active_default_status(): void
+    {
+        LeadStatus::factory()->create(['name' => 'Other']);
+        $default = LeadStatus::factory()->asDefault()->create(['name' => 'Intake']);
+        LeadStatus::factory()->inactive()->create(['name' => 'Inactive']);
+
+        $this->assertSame($default->id, LeadStatus::defaultId());
+    }
+
+    public function test_default_id_ignores_inactive_default_status(): void
+    {
+        LeadStatus::factory()->asDefault()->inactive()->create(['name' => 'Inactive Default']);
+
+        $this->assertNull(LeadStatus::defaultId());
+    }
+
+    public function test_marking_a_status_as_default_clears_the_previous_default(): void
+    {
+        $originalDefault = LeadStatus::factory()->asDefault()->create(['name' => 'Original']);
+        $newDefault = LeadStatus::factory()->create(['name' => 'Replacement']);
+
+        $newDefault->update(['is_default' => true]);
+
+        $this->assertTrue($newDefault->fresh()->is_default);
+        $this->assertFalse($originalDefault->fresh()->is_default);
+    }
 }
