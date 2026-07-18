@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\Leads\Schemas;
 
-use App\Enums\LeadStatus;
 use App\Models\LeadSource;
+use App\Models\LeadStatus;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -27,10 +27,27 @@ class LeadForm
                 TextInput::make('phone')
                     ->tel()
                     ->maxLength(255),
-                Select::make('status')
-                    ->options(LeadStatus::class)
-                    ->default(LeadStatus::New)
-                    ->required(),
+                Select::make('lead_status_id')
+                    ->label('Status')
+                    ->relationship(
+                        name: 'status',
+                        titleAttribute: 'name',
+                        modifyQueryUsing: fn (Builder $query) => $query->active()->orderBy('name'),
+                    )
+                    ->default(fn (): ?int => LeadStatus::defaultId())
+                    ->searchable()
+                    ->preload()
+                    ->required()
+                    ->createOptionForm([
+                        TextInput::make('name')
+                            ->required()
+                            ->maxLength(255)
+                            ->unique(LeadStatus::class),
+                        Toggle::make('is_active')
+                            ->label('Active')
+                            ->default(true)
+                            ->required(),
+                    ]),
                 Select::make('lead_source_id')
                     ->label('Source')
                     ->relationship(

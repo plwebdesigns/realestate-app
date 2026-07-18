@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Enums\LeadStatus;
 use App\Models\Lead;
 use App\Models\LeadSource;
+use App\Models\LeadStatus;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -26,7 +26,7 @@ class LeadFactory extends Factory
             'name' => fake()->name(),
             'email' => fake()->optional()->safeEmail(),
             'phone' => fake()->optional()->phoneNumber(),
-            'status' => fake()->randomElement(LeadStatus::cases()),
+            'lead_status_id' => LeadStatus::factory(),
             'lead_source_id' => LeadSource::factory(),
             'assigned_to' => null,
             'notes' => fake()->optional()->paragraph(),
@@ -48,7 +48,7 @@ class LeadFactory extends Factory
     public function withStatus(LeadStatus $status): static
     {
         return $this->state(fn (array $attributes): array => [
-            'status' => $status,
+            'lead_status_id' => $status->id,
         ]);
     }
 }

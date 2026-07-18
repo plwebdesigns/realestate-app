@@ -2,6 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Lead;
+use App\Models\LeadSource;
+use App\Models\LeadStatus;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -16,14 +19,23 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call([
+            LeadStatusSeeder::class,
+            LeadSourceSeeder::class,
+        ]);
+
         if (! app()->isProduction()) {
             User::factory()->create([
                 'name' => 'Paul Longo',
                 'email' => 'paullongo@outlook.com',
                 'password' => Hash::make('Password123'),
             ]);
-        }
 
-        $this->call(LeadSourceSeeder::class);
+            Lead::factory()
+                ->count(20)
+                ->recycle(LeadStatus::all())
+                ->recycle(LeadSource::all())
+                ->create();
+        }
     }
 }
