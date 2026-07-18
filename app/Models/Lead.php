@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Enums\LeadStatus;
 use Database\Factories\LeadFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'name',
     'email',
     'phone',
-    'status',
+    'lead_status_id',
     'lead_source_id',
     'assigned_to',
     'notes',
@@ -27,22 +26,22 @@ class Lead extends Model
     use HasFactory;
 
     /**
-     * @var array<string, mixed>
-     */
-    protected $attributes = [
-        'status' => LeadStatus::New->value,
-    ];
-
-    /**
      * @return array<string, string>
      */
     protected function casts(): array
     {
         return [
-            'status' => LeadStatus::class,
             'budget_min' => 'integer',
             'budget_max' => 'integer',
         ];
+    }
+
+    /**
+     * @return BelongsTo<LeadStatus, $this>
+     */
+    public function status(): BelongsTo
+    {
+        return $this->belongsTo(LeadStatus::class, 'lead_status_id');
     }
 
     /**

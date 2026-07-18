@@ -41,7 +41,7 @@ class LeadResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->with(['source', 'assignee']);
+            ->with(['status', 'source', 'assignee']);
     }
 
     public static function getRelations(): array

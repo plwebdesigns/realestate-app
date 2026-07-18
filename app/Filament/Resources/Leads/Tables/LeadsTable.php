@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Leads\Tables;
 
-use App\Enums\LeadStatus;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -26,7 +25,8 @@ class LeadsTable
                 TextColumn::make('phone')
                     ->searchable()
                     ->toggleable(),
-                TextColumn::make('status')
+                TextColumn::make('status.name')
+                    ->label('Status')
                     ->badge()
                     ->sortable(),
                 TextColumn::make('source.name')
@@ -58,7 +58,9 @@ class LeadsTable
             ])
             ->filters([
                 SelectFilter::make('status')
-                    ->options(LeadStatus::class),
+                    ->relationship('status', 'name')
+                    ->searchable()
+                    ->preload(),
                 SelectFilter::make('source')
                     ->relationship('source', 'name')
                     ->searchable()

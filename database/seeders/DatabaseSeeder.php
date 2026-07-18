@@ -24,6 +24,9 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        $this->call(LeadSourceSeeder::class);
+        $this->call([
+            LeadStatusSeeder::class,
+            LeadSourceSeeder::class,
+        ]);
     }
 }
