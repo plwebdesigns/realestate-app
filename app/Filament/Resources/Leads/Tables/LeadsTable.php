@@ -8,6 +8,7 @@ use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class LeadsTable
 {
@@ -58,11 +59,19 @@ class LeadsTable
             ])
             ->filters([
                 SelectFilter::make('status')
-                    ->relationship('status', 'name')
+                    ->relationship(
+                        name: 'status',
+                        titleAttribute: 'name',
+                        modifyQueryUsing: fn (Builder $query) => $query->active()->orderBy('name'),
+                    )
                     ->searchable()
                     ->preload(),
                 SelectFilter::make('source')
-                    ->relationship('source', 'name')
+                    ->relationship(
+                        name: 'source',
+                        titleAttribute: 'name',
+                        modifyQueryUsing: fn (Builder $query) => $query->active()->orderBy('name'),
+                    )
                     ->searchable()
                     ->preload(),
                 SelectFilter::make('assignee')
