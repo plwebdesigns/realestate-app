@@ -36,6 +36,15 @@ class LeadForm
                         titleAttribute: 'name',
                         modifyQueryUsing: fn (Builder $query) => $query->active()->orderBy('name'),
                     )
+                    ->getOptionLabelUsing(function (Select $component): ?string {
+                        $state = $component->getState();
+
+                        if (blank($state)) {
+                            return null;
+                        }
+
+                        return LeadStatus::query()->whereKey($state)->value('name');
+                    })
                     ->default(fn (): ?int => LeadStatus::defaultId())
                     ->searchable()
                     ->preload()
@@ -65,6 +74,15 @@ class LeadForm
                         titleAttribute: 'name',
                         modifyQueryUsing: fn (Builder $query) => $query->active()->orderBy('name'),
                     )
+                    ->getOptionLabelUsing(function (Select $component): ?string {
+                        $state = $component->getState();
+
+                        if (blank($state)) {
+                            return null;
+                        }
+
+                        return LeadSource::query()->whereKey($state)->value('name');
+                    })
                     ->searchable()
                     ->preload()
                     ->createOptionForm([
