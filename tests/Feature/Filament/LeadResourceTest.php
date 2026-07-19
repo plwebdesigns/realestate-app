@@ -8,6 +8,7 @@ use App\Models\Lead;
 use App\Models\LeadSource;
 use App\Models\LeadStatus;
 use App\Models\User;
+use Filament\Actions\Testing\TestAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -59,6 +60,48 @@ class LeadResourceTest extends TestCase
             'lead_source_id' => $source->id,
             'assigned_to' => $user->id,
             'preferred_location' => 'Austin',
+        ]);
+    }
+
+    public function test_non_admin_cannot_create_status_or_source_from_lead_form(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user);
+
+        Livewire::test(CreateLead::class)
+            ->assertOk()
+            ->assertActionHidden(TestAction::make('createOption')->schemaComponent('lead_status_id'))
+            ->assertActionHidden(TestAction::make('createOption')->schemaComponent('lead_source_id'));
+    }
+
+    public function test_admin_can_create_status_and_source_from_lead_form(): void
+    {
+        $user = User::factory()->admin()->create();
+
+        $this->actingAs($user);
+
+        Livewire::test(CreateLead::class)
+            ->assertOk()
+            ->assertActionVisible(TestAction::make('createOption')->schemaComponent('lead_status_id'))
+            ->assertActionVisible(TestAction::make('createOption')->schemaComponent('lead_source_id'))
+            ->callAction(TestAction::make('createOption')->schemaComponent('lead_status_id'), data: [
+                'name' => 'Hot Lead',
+                'is_active' => true,
+            ])
+            ->callAction(TestAction::make('createOption')->schemaComponent('lead_source_id'), data: [
+                'name' => 'Referral Partner',
+                'is_active' => true,
+            ]);
+
+        $this->assertDatabaseHas(LeadStatus::class, [
+            'name' => 'Hot Lead',
+            'is_active' => true,
+        ]);
+
+        $this->assertDatabaseHas(LeadSource::class, [
+            'name' => 'Referral Partner',
+            'is_active' => true,
         ]);
     }
 }

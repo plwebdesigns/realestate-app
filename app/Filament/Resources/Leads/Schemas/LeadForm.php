@@ -4,12 +4,14 @@ namespace App\Filament\Resources\Leads\Schemas;
 
 use App\Models\LeadSource;
 use App\Models\LeadStatus;
+use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Gate;
 
 class LeadForm
 {
@@ -47,7 +49,15 @@ class LeadForm
                             ->label('Active')
                             ->default(true)
                             ->required(),
-                    ]),
+                    ])
+                    ->createOptionAction(fn (Action $action) => $action->authorize(
+                        fn (): bool => Gate::allows('create', LeadStatus::class),
+                    ))
+                    ->createOptionUsing(function (array $data): int {
+                        Gate::authorize('create', LeadStatus::class);
+
+                        return LeadStatus::query()->create($data)->getKey();
+                    }),
                 Select::make('lead_source_id')
                     ->label('Source')
                     ->relationship(
@@ -66,7 +76,15 @@ class LeadForm
                             ->label('Active')
                             ->default(true)
                             ->required(),
-                    ]),
+                    ])
+                    ->createOptionAction(fn (Action $action) => $action->authorize(
+                        fn (): bool => Gate::allows('create', LeadSource::class),
+                    ))
+                    ->createOptionUsing(function (array $data): int {
+                        Gate::authorize('create', LeadSource::class);
+
+                        return LeadSource::query()->create($data)->getKey();
+                    }),
                 Select::make('assigned_to')
                     ->label('Assignee')
                     ->relationship(
